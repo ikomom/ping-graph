@@ -1,3 +1,5 @@
+const isProductionRule = process.env.NODE_ENV === "production" ? "warn" : "off";
+
 module.exports = {
   root: true,
   env: {
@@ -12,7 +14,9 @@ module.exports = {
     parser: "@babel/eslint-parser",
   },
   rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "vue/multi-word-component-names": isProductionRule,
+    "no-unused-vars": isProductionRule,
+    "no-console": isProductionRule,
+    "no-debugger": isProductionRule,
   },
 };

@@ -1,5 +1,9 @@
 # ping-graph
 
+g6 Test 
+
+online demo: https://ping-graph.netlify.app/#/
+
 ## Project setup
 ```
 npm install
