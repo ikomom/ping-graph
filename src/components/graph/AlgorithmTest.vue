@@ -37,6 +37,7 @@
         {{ isPlaying ? "playing" : "play" }}
       </el-button>
       <el-button type="danger" @click="stop()">stop</el-button>
+      <el-button type="danger" @click="stopAnimate()">stop animate</el-button>
     </div>
     <div id="mountNode"></div>
   </div>
@@ -46,7 +47,7 @@
 import G6 from "@antv/g6";
 import { sleep } from "@/utils/common";
 import { SWITCH_DATA } from "@/components/graph/data/graph";
-import "./model/circle-runing";
+import "./model/circle-runing-1";
 import "./model/progress-edge";
 import { cloneDeep, isEqual, maxBy, minBy } from "lodash-es";
 // TODO: 异步停止问题
@@ -104,7 +105,7 @@ export default {
       // layout: { type: "force" },
       // fitView: true,
       // fitViewPadding: [20, 40, 50, 20],
-      animate: true,
+      animate: false,
       defaultNode: {
         color: "lightgreen",
         style: {
@@ -179,6 +180,14 @@ export default {
     this.graph.data(this.graphData);
     this.graph.render();
 
+    this.graph.on("click", (e) => {
+      const item = e.item;
+      if (item) {
+        const id = item.getID();
+        const container = item.getContainer();
+        console.log({ id }, container.getChildren(), container.getParent());
+      }
+    });
     this.graph.on("canvas:click", (e) => {
       this.stop();
     });
@@ -209,6 +218,10 @@ export default {
     );*/
   },
   methods: {
+    stopAnimate() {
+      // this.graph.positionsAnimate();
+      this.graph.stopAnimate();
+    },
     stop() {
       this.isPlaying = false;
       this.clearStates();
@@ -335,7 +348,7 @@ export default {
                 true
               );
               edge.update({
-                type: newHull ? "circle-running-1" : "circle-running",
+                type: "circle-running",
                 fillColor: newHull ? "blue" : "red",
                 newHull,
               });

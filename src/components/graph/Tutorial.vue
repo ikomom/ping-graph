@@ -51,7 +51,7 @@ onMounted(() => {
     container: "mountNode", // String | HTMLElement，必须，在 Step 1 中创建的容器 id 或容器本身
     width: 800, // Number，必须，图的宽度
     height: 500, // Number，必须，图的高度
-    plugins: [minimap, imageMinimap, new G6.Grid()],
+    // plugins: [minimap, imageMinimap, new G6.Grid()],
     // layout: {
     //   // Object，可选，布局的方法及其配置项，默认为 random 布局。
     //   type: "force", // 指定为力导向布局
@@ -80,20 +80,44 @@ onMounted(() => {
     // fitViewPadding: [20, 40, 50, 20],
     animate: true,
     defaultNode: {
-      // size: 80,
+      size: 2,
+      style: {
+        fill: "#C6E5FF",
+        stroke: "#5B8FF9",
+        lineWidth: 0.3,
+      },
+      labelCfg: {
+        style: {
+          fontSize: 3,
+        },
+        position: "right",
+        offset: 1,
+      },
     },
     defaultEdge: {
-      // 去掉全局配置的 style
-      labelCfg: {
-        // 边上的标签文本配置
-        autoRotate: true, // 边上的标签文本根据边的方向旋转
+      size: 0.1,
+      color: "#333",
+      opacity: 0.2,
+    },
+    nodeStateStyles: {
+      selected: {
+        fill: "steelblue",
+        stroke: "#000",
+        lineWidth: 1,
       },
     },
     modes: {
       // 允许拖拽画布、放缩画布、拖拽节点
       default: [
-        "drag-canvas",
-        "zoom-canvas" /* "drag-node"*/,
+        {
+          type: "zoom-canvas",
+          enableOptimize: true,
+          optimizeZoom: 0.9,
+        },
+        {
+          type: "drag-canvas",
+          enableOptimize: true,
+        },
         {
           type: "tooltip",
           formatText(model) {
@@ -120,17 +144,17 @@ onMounted(() => {
         },
       ],
     },
-    nodeStateStyles: {
-      // 鼠标 hover 上节点，即 hover 状态为 true 时的样式
-      hover: {
-        fill: "lightsteelblue",
-      },
-      // 鼠标点击节点，即 click 状态为 true 时的样式
-      click: {
-        stroke: "#000",
-        lineWidth: 3,
-      },
-    },
+    // nodeStateStyles: {
+    //   // 鼠标 hover 上节点，即 hover 状态为 true 时的样式
+    //   hover: {
+    //     fill: "lightsteelblue",
+    //   },
+    //   // 鼠标点击节点，即 click 状态为 true 时的样式
+    //   click: {
+    //     stroke: "#000",
+    //     lineWidth: 3,
+    //   },
+    // },
     // 边不同状态下的样式集合
     edgeStateStyles: {
       hover: {
@@ -147,7 +171,8 @@ onMounted(() => {
 
   const main = async () => {
     const response = await fetch(
-      "https://gw.alipayobjects.com/os/basement_prod/6cae02ab-4c29-44b2-b1fd-4005688febcb.json"
+      // "https://gw.alipayobjects.com/os/basement_prod/6cae02ab-4c29-44b2-b1fd-4005688febcb.json"
+      "https://gw.alipayobjects.com/os/bmw-prod/f1565312-d537-4231-adf5-81cb1cd3a0e8.json"
     );
     const remoteData = await response.json();
     const nodes = remoteData.nodes;
