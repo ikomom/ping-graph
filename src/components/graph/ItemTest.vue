@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <div style="margin-bottom: 10px">//</div>
+    <div style="margin-bottom: 10px">
+      <div>select <ElInput v-model="selectId" /></div>
+      <el-button @click="play"> play</el-button>
+    </div>
     <div id="mountNode"></div>
   </div>
 </template>
@@ -8,12 +11,16 @@
 <script>
 import G6 from "@antv/g6";
 import { SWITCH_DATA } from "@/components/graph/data/graph";
-import "./model/circle-runing";
+import "./model/circle-runing-1";
 import "./model/progress-edge";
+import { sleep } from "@/utils/common";
 export default {
   name: "ItemTest",
   data() {
-    return {};
+    return {
+      selectId: "1",
+      isPlaying: false,
+    };
   },
   async mounted() {
     this.graph = new G6.Graph({
@@ -165,9 +172,87 @@ export default {
         // const matrix = this.graph.getAdjMatrix();
         // console.log({ matrix });
       }
+      this.clearStates();
     });
   },
-  methods: {},
+  methods: {
+    async play() {
+      this.isPlaying = true;
+      await this.select("1", {
+        deep: true,
+        shortPath: ["1", "6"],
+        level: 0,
+        stateName: "highlight",
+      });
+      await this.select("6", {
+        deep: true,
+        shortPath: ["1", "6"].reverse(),
+        level: 0,
+        stateName: "highlight-blue",
+      });
+      this.isPlaying = false;
+    },
+    async select(id, opt = {}) {
+      if (!this.isPlaying) return;
+      const {
+        deep = false,
+        shortPath,
+        level = 0,
+        stateName = "highlight",
+      } = opt;
+
+      const startNode = this.graph.findById(id);
+      if (startNode.hasState(stateName)) {
+        return;
+      }
+      startNode.setState(stateName, true);
+      if (deep) {
+        const curPathNode = shortPath[level];
+        const nextPathNode = shortPath[level + 1];
+        startNode.getEdges().forEach((edge) => {
+          edge.setState(stateName, true);
+          // console.log(
+          //   { curPathNode, nextPathNode },
+          //   { s: edge.getSource().getID(), t: edge.getTarget().getID() }
+          // );
+          if (
+            edge.getSource().getID() === curPathNode &&
+            edge.getTarget().getID() === nextPathNode
+          ) {
+            edge.update({
+              type: "circle-running",
+              fillColor: "red",
+            });
+          }
+        });
+        await sleep(1000);
+        await Promise.all(
+          startNode.getNeighbors().map((node) => {
+            return this.select(node.getID(), {
+              ...opt,
+              level: opt.level + 1,
+            });
+          })
+        );
+      }
+    },
+    async selectEdge(edgeId) {
+      const edge = this.graph.findById(edgeId);
+      if (edge.hasState("highlight")) {
+        return;
+      }
+      edge.setState("highlight", true);
+    },
+    clearStates() {
+      const { graph } = this;
+      graph.getNodes().forEach((node) => {
+        graph.clearItemStates(node);
+      });
+      graph.getEdges().forEach((edge) => {
+        graph.clearItemStates(edge);
+      });
+    },
+  },
   beforeDestroy() {
     this.graph.destroy();
   },
