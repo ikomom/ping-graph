@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <nav>
+    <nav v-for="nav in navs" :key="nav.value">
+      <span>{{ nav.title }}:</span>
       <router-link
-        v-for="(route, index) in graphRoutes"
+        v-for="(route, index) in nav.routes"
         :key="route.path"
         :to="route.path"
       >
@@ -10,11 +11,17 @@
         {{ route.meta.title }}
       </router-link>
     </nav>
+    <el-divider />
     <router-view />
   </div>
 </template>
 <script setup>
-import { graphRoutes } from "@/utils/getRoute";
+import { graphRoutes, mapRoutes } from "@/utils/getRoute";
+
+const navs = [
+  { title: "graph", value: "graph", routes: graphRoutes },
+  { title: "map", value: "map", routes: mapRoutes },
+];
 </script>
 <style lang="less">
 .g6-tooltip {

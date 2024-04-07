@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import { graphRoutes } from "@/utils/getRoute";
+import { graphRoutes, mapRoutes } from "@/utils/getRoute";
 
 Vue.use(VueRouter);
 const routes = [
@@ -11,6 +11,7 @@ const routes = [
     // component: HomeView,
   },
   ...graphRoutes,
+  ...mapRoutes,
 ];
 
 const router = new VueRouter({
